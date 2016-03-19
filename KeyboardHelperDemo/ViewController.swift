@@ -21,7 +21,7 @@ class ViewController: UIViewController, KeyboardNotificationDelegate {
         
         self.tapGesture = UITapGestureRecognizer(target: self, action: "dismissKeyboard")
         self.view.addGestureRecognizer(tapGesture)
-        self.tapGesture.enabled = false
+        self.tapGesture.enabled = true
         
         self.keyboardHelper = KeyboardHelper(delegate: self)
     }
@@ -31,40 +31,23 @@ class ViewController: UIViewController, KeyboardNotificationDelegate {
     }
     
     func keyboardWillAppear(info: KeyboardAppearanceInfo) {
-        UIView.animateWithDuration(NSTimeInterval(info.animationDuration),
-            delay: 0,
-            options: animationOptionsWithCurve(info.animationCurve),
-            animations: {
-                let insets = UIEdgeInsetsMake(0, 0, info.endFrame.size.height, 0)
-                self.scrollView.contentInset = insets
-                self.scrollView.scrollIndicatorInsets = insets
-            },
-            completion:nil)
+        info.animateAlong({ () -> Void in
+            let insets = UIEdgeInsetsMake(0, 0, info.endFrame.size.height, 0)
+            self.scrollView.contentInset = insets
+            self.scrollView.scrollIndicatorInsets = insets
+        })  { finished in }
     }
     
     func keyboardWillDisappear(info: KeyboardAppearanceInfo) {
         UIView.animateWithDuration(NSTimeInterval(info.animationDuration),
             delay: 0,
-            options: animationOptionsWithCurve(info.animationCurve),
+            options: info.animationOptions,
             animations: {
                 let insets = UIEdgeInsetsZero
                 self.scrollView.contentInset = insets
                 self.scrollView.scrollIndicatorInsets = insets
             },
             completion:nil)
-    }
-    
-    func animationOptionsWithCurve(curve: UIViewAnimationCurve) -> UIViewAnimationOptions {
-        switch curve {
-        case .EaseIn:
-            return UIViewAnimationOptions.CurveEaseIn
-        case .EaseOut:
-            return UIViewAnimationOptions.CurveEaseOut
-        case .EaseInOut:
-            return UIViewAnimationOptions.CurveEaseInOut
-        case .Linear:
-            return UIViewAnimationOptions.CurveLinear
-        }
     }
 
 
